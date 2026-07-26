@@ -1,0 +1,5 @@
+.ssh/
+*.log
+.bash_history
+*.token
+*secret*
