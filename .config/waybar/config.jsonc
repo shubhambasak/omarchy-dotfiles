@@ -11,8 +11,8 @@
     "bluetooth",
     "network",
     "pulseaudio",
-    "cpu",
     "custom/cpu_temp_avg",
+    "cpu",
     "battery"
   ],
   "hyprland/workspaces": {
@@ -58,6 +58,7 @@
     "signal": 7,
     "interval": 21600
   },
+
   "custom/cpu_temp_avg": {
     "exec": "/home/voz/.config/waybar/scripts/cpu_temp_avg.sh",
     "interval": 5,
@@ -99,7 +100,7 @@
     "format": "{icon} {capacity}%",
     "format-discharging": "{icon} {capacity}%",
     "format-charging": "{icon} {capacity}%",
-    "format-plugged": " {capacity}%",
+    "format-plugged": "",
     "format-icons": {
       "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
       "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]

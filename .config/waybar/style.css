@@ -34,7 +34,8 @@
 #battery,
 #pulseaudio,
 #custom-omarchy,
-#custom-update {
+#custom-update,
+#custom-cpu_temp_avg {
   min-width: 12px;
   margin: 0 7.5px;
 }
@@ -67,6 +68,17 @@ tooltip {
   margin-left: 8.75px;
 }
 
+#custom-weather {
+  margin-left: 7.5px;
+  margin-right: 7.5px;
+}
+
+#custom-weather.unavailable {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+
 .hidden {
   opacity: 0;
 }
@@ -97,15 +109,4 @@ tooltip {
 
 #custom-voxtype.recording {
   color: #a55555;
-}
-
-#custom-weather {
-  margin-left: 7.5px;
-  margin-right: 7.5px;
-}
-
-#custom-weather.unavailable {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
 }

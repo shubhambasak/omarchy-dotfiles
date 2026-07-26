@@ -1,5 +1,58 @@
-.ssh/
+# --- Omarchy-managed (never commit these) ---
+# These are symlinks/state managed by `omarchy theme set`, `omarchy theme bg`, etc.
+.config/omarchy/current/
+.config/omarchy/themes/
+
+# --- Browser & Electron app data ---
+.config/chromium/
+.config/brave-flags.conf
+.config/Cursor/
+.config/vivaldi/
+.config/CodeTantra*/
+.config/Typora/
+.config/obsidian/
+
+# --- App state & caches (not config) ---
+.config/pulse/
+.config/dconf/
+.config/fcitx/
+.config/fcitx5/
+.config/ibus/
+.config/libreoffice/
+.config/go/
+.config/cliamp/
+.config/qalculate/
+.config/rest-client/
+.config/opencode/
+.config/mise/
+.config/wiremix/
+
+# --- System-managed files ---
+.config/mimeapps.list
+.config/user-dirs.*
+.config/uwsm/
+.config/environment.d/
+.config/autostart/
+.config/systemd/
+.config/fontconfig/
+.config/hyprland-preview-share-picker/
+.config/elephant/
+.config/swayosd/
+.config/imv/
+.config/xournalpp/
+
+# --- Hyprland refresh backups (created by `omarchy refresh`) ---
+.config/hypr/*.bak.*
+
+# --- Nvim auto-generated ---
+.config/nvim/lazy-lock.json
+.config/nvim/.gitignore
+.config/nvim/LICENSE
+.config/nvim/README.md
+
+# --- Generic ---
 *.log
-.bash_history
 *.token
 *secret*
+.ssh/
+.bash_history
