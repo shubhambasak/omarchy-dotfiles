@@ -1,0 +1,25 @@
+-- Keymaps are automatically loaded on the VeryLazy event
+-- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
+-- Add any additional keymaps here
+--
+--
+-- -- ~/.config/nvim/lua/config/keymaps.lua
+--
+-- -- Use system() instead of jobstart
+-- vim.keymap.set("n", "<A-Up>", function()
+--   vim.cmd("silent !alacritty msg zoom-in")
+--   vim.cmd("redraw!")
+--   vim.notify("🔍 Zoom In (+)", vim.log.levels.INFO)
+-- end, { desc = "Increase font size" })
+--
+-- vim.keymap.set("n", "<A-Down>", function()
+--   vim.cmd("silent !alacritty msg zoom-out")
+--   vim.cmd("redraw!")
+--   vim.notify("🔍 Zoom Out (-)", vim.log.levels.INFO)
+-- end, { desc = "Decrease font size" })
+--
+-- vim.keymap.set("n", "<A-0>", function()
+--   vim.cmd("silent !alacritty msg zoom-reset")
+--   vim.cmd("redraw!")
+--   vim.notify("🔍 Zoom Reset", vim.log.levels.INFO)
+-- end, { desc = "Reset font size" })

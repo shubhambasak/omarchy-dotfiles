@@ -1,0 +1,398 @@
+{
+    "telemetry.sqmId": "",
+    "telemetry.machineId": "1d7a7aaf5fe6f72656674ac900bdd1a31ecb6b31c61489496b741a541de880e2",
+    "telemetry.macMachineId": "05d5dd525e33a10f37186d6795d352ed4c9e2eda025c204f1b906b483342a2f3",
+    "telemetry.devDeviceId": "af039466-56b9-4e31-b891-60bf24a28f4f",
+    "backupWorkspaces": {
+        "workspaces": [],
+        "folders": [],
+        "emptyWindows": [
+            {
+                "backupFolder": "1783397357731"
+            },
+            {
+                "backupFolder": "1783397492388"
+            },
+            {
+                "backupFolder": "1783397551405"
+            }
+        ]
+    },
+    "windowControlHeight": 35,
+    "profileAssociations": {
+        "workspaces": {},
+        "emptyWindows": {
+            "1783397357731": "__default__profile__",
+            "1783397492388": "__default__profile__",
+            "1783397551405": "__default__profile__"
+        }
+    },
+    "theme": "vs-dark",
+    "themeBackground": "#181818",
+    "windowSplash": {
+        "zoomLevel": 0,
+        "baseTheme": "vs-dark",
+        "colorInfo": {
+            "foreground": "rgba(228, 228, 228, 0.92)",
+            "background": "#181818",
+            "editorBackground": "#181818",
+            "titleBarBackground": "#141414",
+            "titleBarBorder": "rgba(228, 228, 228, 0.07)",
+            "activityBarBackground": "#141414",
+            "sideBarBackground": "#141414",
+            "sideBarBorder": "rgba(228, 228, 228, 0.07)",
+            "statusBarBackground": "#141414",
+            "statusBarBorder": "rgba(228, 228, 228, 0.07)",
+            "statusBarNoFolderBackground": "#141414"
+        },
+        "layoutInfo": {
+            "sideBarSide": "left",
+            "editorPartMinWidth": 220,
+            "titleBarHeight": 35,
+            "activityBarWidth": 0,
+            "sideBarWidth": 0,
+            "auxiliarySideBarWidth": 0,
+            "statusBarHeight": 22,
+            "windowBorder": false
+        }
+    },
+    "windowsState": {
+        "lastActiveWindow": {
+            "backupPath": "/home/voz/.config/Cursor/Backups/1783397492388",
+            "uiState": {
+                "mode": 0,
+                "x": 0,
+                "y": 0,
+                "width": 630,
+                "height": 520,
+                "glassMode": true
+            }
+        },
+        "openedWindows": [],
+        "lastNonExtensionWindowWasOpenOnShutdown": false
+    },
+    "lastKnownMenubarData": {
+        "menus": {
+            "GlassMacApplication": {
+                "items": [
+                    {
+                        "id": "glass.showAboutCursor",
+                        "label": "About Cursor",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.glassMenubarDownloadUpdate",
+                        "label": "Download Update",
+                        "sourceId": "glassCommandRegistry"
+                    }
+                ]
+            },
+            "File": {
+                "items": [
+                    {
+                        "id": "glass.newAgentFromKeyboard",
+                        "label": "New Agent",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.openWorkspace",
+                        "label": "Open Folder",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.newTerminal",
+                        "label": "New Terminal",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.newBrowser",
+                        "label": "New Browser",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.openIde",
+                        "label": "Open Editor Window",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.quitApplication",
+                        "label": "Exit",
+                        "sourceId": "glassCommandRegistry"
+                    }
+                ]
+            },
+            "View": {
+                "items": [
+                    {
+                        "id": "glass.openChangesTab",
+                        "label": "Changes",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.openBrowserTab",
+                        "label": "Browser",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.openFilesTab",
+                        "label": "Files",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.toggleTerminal",
+                        "label": "Terminal",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.toggleChatStatusBar",
+                        "label": "Status Bar",
+                        "sourceId": "glassCommandRegistry",
+                        "checked": true
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.zoomIn",
+                        "label": "Zoom In",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.zoomOut",
+                        "label": "Zoom Out",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.zoomReset",
+                        "label": "Reset Zoom",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.settings",
+                        "label": "Settings",
+                        "sourceId": "glassCommandRegistry"
+                    }
+                ]
+            },
+            "Help": {
+                "items": [
+                    {
+                        "id": "glass.openPalette",
+                        "label": "Command Palette",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.keybindingHelp",
+                        "label": "Keyboard Shortcuts",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.openLicenseUrl",
+                        "label": "View License",
+                        "sourceId": "glassCommandRegistry"
+                    }
+                ]
+            },
+            "Edit": {
+                "items": [
+                    {
+                        "id": "glass.osEditUndo",
+                        "label": "&&Undo",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.osEditRedo",
+                        "label": "&&Redo",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.osEditCut",
+                        "label": "Cu&&t",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.osEditCopy",
+                        "label": "&&Copy",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.osEditPaste",
+                        "label": "&&Paste",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.osEditSelectAll",
+                        "label": "Select &&All",
+                        "sourceId": "glassCommandRegistry"
+                    }
+                ]
+            },
+            "GlassNoWindowFile": {
+                "items": [
+                    {
+                        "id": "glass.newAgentFromKeyboard",
+                        "label": "New Agent",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.openWorkspace",
+                        "label": "Open Folder",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "cursor.openOrFocusGlassWindow",
+                        "label": "New Agents Window",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.newTerminal",
+                        "label": "New Terminal",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "glass.newBrowser",
+                        "label": "New Browser",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.openIde",
+                        "label": "Open Editor Window",
+                        "sourceId": "glassCommandRegistry"
+                    },
+                    {
+                        "id": "vscode.menubar.separator"
+                    },
+                    {
+                        "id": "glass.quitApplication",
+                        "label": "Exit",
+                        "sourceId": "glassCommandRegistry"
+                    }
+                ]
+            }
+        },
+        "keybindings": {
+            "glass.newAgentFromKeyboard": {
+                "label": "Ctrl+N",
+                "userSettingsLabel": "ctrl+n"
+            },
+            "glass.openWorkspace": {
+                "label": "Ctrl+O",
+                "userSettingsLabel": "ctrl+o"
+            },
+            "glass.openIde": {
+                "label": "Ctrl+Shift+N",
+                "userSettingsLabel": "ctrl+shift+n"
+            },
+            "glass.quitApplication": {
+                "label": "Ctrl+Q",
+                "userSettingsLabel": "ctrl+q"
+            },
+            "glass.openChangesTab": {
+                "label": "Ctrl+E",
+                "userSettingsLabel": "ctrl+e"
+            },
+            "glass.openBrowserTab": {
+                "label": "Ctrl+Shift+B",
+                "userSettingsLabel": "ctrl+shift+b"
+            },
+            "glass.openFilesTab": {
+                "label": "Ctrl+G",
+                "userSettingsLabel": "ctrl+g"
+            },
+            "glass.toggleTerminal": {
+                "label": "Ctrl+J",
+                "userSettingsLabel": "ctrl+j"
+            },
+            "glass.zoomIn": {
+                "label": "Ctrl+=",
+                "userSettingsLabel": "ctrl+="
+            },
+            "glass.zoomOut": {
+                "label": "Ctrl+-",
+                "userSettingsLabel": "ctrl+-"
+            },
+            "glass.zoomReset": {
+                "label": "Ctrl+0",
+                "userSettingsLabel": "ctrl+0"
+            },
+            "glass.settings": {
+                "label": "Ctrl+,",
+                "userSettingsLabel": "ctrl+,"
+            },
+            "glass.openPalette": {
+                "label": "Ctrl+K",
+                "userSettingsLabel": "ctrl+k"
+            },
+            "glass.keybindingHelp": {
+                "label": "Ctrl+Shift+/",
+                "userSettingsLabel": "ctrl+shift+/"
+            },
+            "glass.osEditUndo": {
+                "label": "Ctrl+Z",
+                "userSettingsLabel": "ctrl+z"
+            },
+            "glass.osEditRedo": {
+                "label": "Ctrl+Y",
+                "userSettingsLabel": "ctrl+y"
+            },
+            "glass.osEditCut": {
+                "label": "Ctrl+X",
+                "userSettingsLabel": "ctrl+x"
+            },
+            "glass.osEditCopy": {
+                "label": "Ctrl+C",
+                "userSettingsLabel": "ctrl+c"
+            },
+            "glass.osEditPaste": {
+                "label": "Ctrl+V",
+                "userSettingsLabel": "ctrl+v"
+            },
+            "glass.osEditSelectAll": {
+                "label": "Ctrl+A",
+                "userSettingsLabel": "ctrl+a"
+            }
+        }
+    },
+    "glassSplash": {
+        "baseTheme": "vs-dark",
+        "background": "#181818"
+    },
+    "glass.theme.detectColorScheme": true,
+    "glass.theme.settingsId": "Cursor Dark",
+    "lifecycle.lastShutdownJoinerTimings": {
+        "extHostStarter": 5,
+        "instanceLockfile": 11,
+        "workspaceStorage": 26,
+        "applicationStorage": 32
+    }
+}

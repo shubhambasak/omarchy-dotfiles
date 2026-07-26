@@ -1,0 +1,32 @@
+-- return {
+--   {
+--     trig = "func",
+--     name = "Lua function",
+--     dscr = "Create a Lua function",
+--     body = {
+--       "function ${1:name}(${2:params})",
+--       '  ${3:print("Hello")}',
+--       "end",
+--     },
+--   },
+--   {
+--     trig = "lfunc",
+--     name = "Local function",
+--     dscr = "Create a local Lua function",
+--     body = {
+--       "local function ${1:name}(${2:params})",
+--       '  ${3:print("Hello")}',
+--       "end",
+--     },
+--   },
+--   {
+--     trig = "ret",
+--     name = "Return table",
+--     dscr = "Return a table from module",
+--     body = {
+--       "return {",
+--       "  ${1:key} = ${2:value},",
+--       "}",
+--     },
+--   },
+-- }
