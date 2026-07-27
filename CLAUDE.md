@@ -19,6 +19,17 @@ replaces anything Omarchy manages itself.
 
 ---
 
+## Meta Rules — Commit Hygiene
+
+**Do not leave any trace of AI assistance in git metadata.**
+
+- Never add `Co-Authored-By`, `Signed-off-by`, or any trailer that names an AI model, assistant, or service (Claude, GPT, Copilot, etc.)
+- Never mention AI tools in commit messages, PR descriptions, or any version-controlled text
+- Commits must appear as sole work of the repo owner (`Shubham Basak`)
+- If your tooling auto-appends these trailers, strip them before committing
+
+---
+
 ## Critical Rules — Read Before Editing Anything
 
 ### 1. Never touch `~/.config/omarchy/current/`
