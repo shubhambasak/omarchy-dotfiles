@@ -27,6 +27,7 @@ STEPS=(
   "07-git.sh"
   "08-misc.sh"
   "09-verify.sh"
+  "10-packages.sh"
 )
 
 echo -e "${BOLD}Omarchy Personalisation Installer${NC}"
