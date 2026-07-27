@@ -11,8 +11,8 @@
     "bluetooth",
     "network",
     "pulseaudio",
-    "custom/cpu_temp_avg",
     "cpu",
+    "custom/cpu_temp_avg",
     "battery"
   ],
   "hyprland/workspaces": {
@@ -100,7 +100,7 @@
     "format": "{icon} {capacity}%",
     "format-discharging": "{icon} {capacity}%",
     "format-charging": "{icon} {capacity}%",
-    "format-plugged": "",
+    "format-plugged": " {capacity}%",
     "format-icons": {
       "charging": ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"],
       "default": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
