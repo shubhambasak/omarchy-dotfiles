@@ -1,0 +1,62 @@
+#!/bin/bash
+# Remove AI traces from entire git history of the current repo.
+# Usage: git purge-ai [--dry-run]
+#
+# Rewrites all commits — warn collaborators and force-push after running.
+
+set -euo pipefail
+
+DRY_RUN=0
+for arg in "$@"; do
+    [[ "$arg" == "--dry-run" ]] && DRY_RUN=1
+done
+
+if ! git rev-parse --git-dir &>/dev/null; then
+    echo "error: not inside a git repository" >&2
+    exit 1
+fi
+
+AI_PATHS=(
+    .claude
+    .cursor
+    .aider
+    .copilot
+    .continue
+    .codeium
+    .supermaven
+)
+
+# Build --path args for filter-repo
+PATH_ARGS=()
+for p in "${AI_PATHS[@]}"; do
+    PATH_ARGS+=(--path "$p")
+done
+
+# Check if any of these paths actually exist in history
+echo "Scanning history for AI traces..."
+found=$(git log --all --full-history --name-only --format="" -- "${AI_PATHS[@]}" 2>/dev/null | sort -u)
+
+if [ -z "$found" ]; then
+    echo "No AI traces found in git history. Nothing to do."
+    exit 0
+fi
+
+echo "Found AI traces in history:"
+echo "$found" | sed 's/^/  /'
+echo ""
+
+if [ "$DRY_RUN" -eq 1 ]; then
+    echo "[dry-run] Would remove the above paths from all commits."
+    exit 0
+fi
+
+read -r -p "Rewrite history to remove these? This cannot be undone. [y/N] " confirm
+[[ "$confirm" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+
+git filter-repo "${PATH_ARGS[@]}" --invert-paths --force
+
+echo ""
+echo "Done. History rewritten."
+echo "If this repo has a remote, force-push each branch:"
+echo "  git push --force --all"
+echo "  git push --force --tags"

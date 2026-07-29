@@ -1,0 +1,15 @@
+# AI assistant traces
+.claude/
+.cursor/
+.aider
+.aider.tags.cache.v*/
+.aider.chat.history.md
+.aider.input.history
+.copilot/
+.continue/
+.codeium/
+.supermaven/
+
+# Common AI-generated scratch files
+*.ai.md
+*.claude.md

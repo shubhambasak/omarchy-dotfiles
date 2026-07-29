@@ -1,0 +1,37 @@
+#!/bin/bash
+# Block AI assistant traces from being committed
+
+AI_PATTERNS=(
+    "^\.claude/"
+    "^\.cursor/"
+    "^\.aider"
+    "^\.copilot/"
+    "^\.continue/"
+    "^\.codeium/"
+    "^\.supermaven/"
+    "\.ai\.md$"
+    "\.claude\.md$"
+)
+
+staged=$(git diff --cached --name-only 2>/dev/null)
+
+blocked=""
+for pattern in "${AI_PATTERNS[@]}"; do
+    matches=$(echo "$staged" | grep -E "$pattern")
+    if [ -n "$matches" ]; then
+        blocked="$blocked$matches"$'\n'
+    fi
+done
+
+if [ -n "$blocked" ]; then
+    echo "pre-commit: refusing to commit AI traces:" >&2
+    echo "$blocked" | sed 's/^/  /' >&2
+    echo "Run: git rm --cached <file>  to unstage them." >&2
+    exit 1
+fi
+
+# Chain to the repo-local pre-commit hook if one exists
+local_hook="$(git rev-parse --git-dir 2>/dev/null)/hooks/pre-commit"
+if [ -x "$local_hook" ]; then
+    exec "$local_hook"
+fi
