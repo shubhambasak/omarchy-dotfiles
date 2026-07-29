@@ -59,5 +59,31 @@ GIT_NAME="$(git config --file "$HOME/.config/git/config" user.name 2>/dev/null |
 [[ -n "$GIT_NAME" ]] || err "git user.name not set in ~/.config/git/config"
 ok "git identity — $GIT_NAME"
 
+# 9. Global gitignore must be installed and registered
+[[ -f "$HOME/.gitignore_global" ]] \
+  || err "~/.gitignore_global not found — run 07-git.sh"
+EXCLUDES="$(git config --file "$HOME/.config/git/config" core.excludesfile 2>/dev/null || true)"
+[[ -n "$EXCLUDES" ]] \
+  || err "core.excludesfile not set in git config — run 07-git.sh"
+ok "global gitignore registered ($EXCLUDES)"
+
+# 10. Global pre-commit hook must be installed and executable
+[[ -x "$HOME/.git-hooks/pre-commit" ]] \
+  || err "~/.git-hooks/pre-commit not executable — run 07-git.sh"
+HOOKS_PATH="$(git config --file "$HOME/.config/git/config" core.hooksPath 2>/dev/null || true)"
+[[ -n "$HOOKS_PATH" ]] \
+  || err "core.hooksPath not set in git config — run 07-git.sh"
+ok "global pre-commit hook installed ($HOOKS_PATH)"
+
+# 11. git-purge-ai must be available
+[[ -x "$HOME/.local/bin/git-purge-ai" ]] \
+  || err "~/.local/bin/git-purge-ai not executable — run 07-git.sh"
+ok "git-purge-ai available"
+
+# 12. git-filter-repo must be available (required by git-purge-ai)
+[[ -x "$HOME/.local/bin/git-filter-repo" ]] \
+  || err "~/.local/bin/git-filter-repo not found — run 07-git.sh"
+ok "git-filter-repo available"
+
 echo ""
 ok "All checks passed. System is personalised and fully functional."

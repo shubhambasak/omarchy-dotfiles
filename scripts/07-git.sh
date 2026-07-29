@@ -1,5 +1,5 @@
 #!/bin/bash
-# Apply git config — identity and personal preferences.
+# Apply git config — identity, personal preferences, and global git hygiene tooling.
 # Copies the full curated git config from the repo.
 # Skips if user.name is already set to avoid overwriting a different identity.
 set -euo pipefail
@@ -35,10 +35,40 @@ if [[ -n "$EXISTING_NAME" && "$EXISTING_NAME" != "Shubham Basak" ]]; then
   git config --file "$GIT_CONFIG" tag.sort -version:refname      2>/dev/null || true
   git config --file "$GIT_CONFIG" rerere.enabled true            2>/dev/null || true
   git config --file "$GIT_CONFIG" rerere.autoupdate true         2>/dev/null || true
+  git config --file "$GIT_CONFIG" core.excludesfile ~/.gitignore_global 2>/dev/null || true
+  git config --file "$GIT_CONFIG" core.hooksPath ~/.git-hooks           2>/dev/null || true
   ok "git aliases and preferences applied (identity kept as-is)"
 else
   # No existing identity or it's already ours — copy the full curated config
   mkdir -p "$(dirname "$GIT_CONFIG")"
   cp "$SRC" "$GIT_CONFIG"
   ok "git config applied (identity: Shubham Basak <bloggershubham7011@gmail.com>)"
+fi
+
+# --- Global gitignore ---
+cp "$REPO_DIR/.gitignore_global" "$HOME/.gitignore_global"
+ok "~/.gitignore_global installed"
+
+# --- Global pre-commit hook ---
+mkdir -p "$HOME/.git-hooks"
+cp "$REPO_DIR/.git-hooks/pre-commit" "$HOME/.git-hooks/pre-commit"
+chmod +x "$HOME/.git-hooks/pre-commit"
+ok "~/.git-hooks/pre-commit installed"
+
+# --- git-purge-ai utility ---
+mkdir -p "$HOME/.local/bin"
+cp "$REPO_DIR/.local/bin/git-purge-ai" "$HOME/.local/bin/git-purge-ai"
+chmod +x "$HOME/.local/bin/git-purge-ai"
+ok "~/.local/bin/git-purge-ai installed"
+
+# --- git-filter-repo (required by git-purge-ai) ---
+FILTER_REPO="$HOME/.local/bin/git-filter-repo"
+if [[ ! -x "$FILTER_REPO" ]]; then
+  curl -fsSL \
+    https://raw.githubusercontent.com/newren/git-filter-repo/main/git-filter-repo \
+    -o "$FILTER_REPO"
+  chmod +x "$FILTER_REPO"
+  ok "git-filter-repo downloaded to ~/.local/bin/"
+else
+  skip "git-filter-repo already present"
 fi
