@@ -31,3 +31,5 @@
 	email = bloggershubham7011@gmail.com
 [core]
 	autocrlf = false
+	excludesfile = ~/.gitignore_global
+	hooksPath = ~/.git-hooks
