@@ -1,0 +1,12 @@
+/* Sidebar (Home/Recent/Starred/Downloads/etc.) row spacing - GtkPlacesSidebar
+   is a standard widget, so this selector is stable. */
+placessidebar row {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* Nautilus icon-grid top margin - best-effort, targets GtkGridView's default
+   CSS node name. May need adjusting if Nautilus uses a custom node name. */
+gridview {
+  margin-top: 12px;
+}

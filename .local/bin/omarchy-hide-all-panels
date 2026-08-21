@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Closes any open Omarchy bar-widget panel (bluetooth, network, audio,
+# agents, etc). Workaround for a toggle bug where a second click on the same
+# bar icon sometimes opens a different panel instead of closing the current
+# one - this always hides explicitly rather than relying on toggle state.
+
+for plugin in omarchy.bluetooth omarchy.network omarchy.audio omarchy.agents omarchy.monitor omarchy.power omarchy.menu; do
+  omarchy-shell -q shell hide "$plugin" 2>/dev/null
+done

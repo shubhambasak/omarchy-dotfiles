@@ -12,10 +12,56 @@ Omarchy-managed system. Omarchy is an opinionated Arch Linux + Hyprland distro w
 config management, theme switching, and update pipeline. This repo layers on top — it never
 replaces anything Omarchy manages itself.
 
-**Owner:** Shubham Basak  
-**Machine:** Lenovo ThinkPad T480, Arch Linux / Omarchy / Hyprland  
-**Repo:** `git@github.com:shubhambasak/omarchy-dotfiles.git`  
+**Owner:** Shubham Basak
+**Machine:** Lenovo ThinkPad T480, Arch Linux / Omarchy **quattro** / Hyprland
+**Repo:** `git@github.com:shubhambasak/omarchy-dotfiles.git`
 **Install:** `bash install.sh` from the repo root
+
+---
+
+## Omarchy Quattro — Read This First
+
+This repo targets **Omarchy quattro**, the package-backed rewrite of Omarchy (as opposed to
+the older git-checkout-based Omarchy 3.x). If you're setting up on a pre-quattro install, run
+`omarchy-upgrade-to-quattro` first — this repo's scripts assume the quattro layout and will
+fail their prerequisite checks otherwise.
+
+Quattro changed a lot more than "Omarchy 3.x with a new package manager":
+
+| Area | Omarchy 3.x | Omarchy quattro |
+|---|---|---|
+| Omarchy's own source | git checkout at `~/.local/share/omarchy` | real package at `/usr/share/omarchy` |
+| Hyprland config format | `.conf` (hyprlang) | `.lua` — same override file *locations*, new syntax |
+| Bar | waybar | own Quickshell-based `omarchy-shell` (bar + notifications + idle/lock + launcher, all one process) |
+| Idle/lock | hypridle + hyprlock | built into `omarchy-shell`, configured via `omarchy toggle idle`/`omarchy toggle screensaver` and `~/.config/omarchy/shell.json` |
+| App launcher | walker | `omarchy-menu` (part of `omarchy-shell`) |
+| Notifications | mako | built into `omarchy-shell` |
+| Theme state | `~/.config/omarchy/current/` | `~/.local/state/omarchy/current/` |
+
+**We deliberately went back to real waybar** (see "Why waybar instead of the new bar" below).
+Everything else (idle/lock, launcher, notifications) stays on Omarchy's new built-in shell.
+
+### Why waybar instead of the new bar
+
+The new `omarchy-shell` bar's app-drawer is a narrow single-column list shared with the root
+menu (not a dedicated grid like the old walker), and — more importantly — its own bar has a
+confirmed upstream bug: clicking a bar-widget-panel icon twice sometimes opens a *different*
+panel instead of closing the current one (two separate code paths track "is this panel open"
+and can drift out of sync; see `omarchy-hide-all-panels` below for the workaround). Real
+waybar doesn't have either issue, so the bar itself was restored while everything else
+(idle/lock/notifications/launcher) stays on Omarchy's new shell.
+
+`omarchy-shell`'s own bar is **hidden**, not removed — its process keeps running so idle/lock/
+notifications/the app launcher keep working. Only the bar UI is hidden (`omarchy toggle
+bar-off on`). Waybar's bluetooth/network/audio icons call each panel's own dedicated IPC
+target directly (e.g. `omarchy-shell omarchy.bluetooth toggle`) rather than the generic
+`omarchy-shell shell toggle <id>` path, specifically to avoid the toggle bug above.
+
+### `SUPER+Q` — bar panel close-all
+
+Bound to `~/.local/bin/omarchy-hide-all-panels`, installed by `04-hyprland.sh`. Force-closes
+any open Omarchy bar panel (bluetooth/network/audio/agents/monitor/power/menu) regardless of
+the toggle-state bug — the reliable way to close a stuck/wrong panel.
 
 ---
 
@@ -32,42 +78,40 @@ replaces anything Omarchy manages itself.
 
 ## Critical Rules — Read Before Editing Anything
 
-### 1. Never touch `~/.config/omarchy/current/`
+### 1. Never touch `~/.local/state/omarchy/current/`
 
-This directory is **Omarchy's theme state**, managed exclusively by `omarchy theme set <name>`.
-It is a tree of symlinks pointing at the active theme's files. If you copy files here manually,
-theme switching breaks silently (waybar colors, wallpaper, terminal colors all go wrong).
+This directory is **Omarchy's theme state** (moved here from `~/.config/omarchy/current/` in
+quattro), managed exclusively by `omarchy theme set <name>`. It is a tree of symlinks pointing
+at the active theme's files. If you copy files here manually, theme switching breaks silently
+(bar colors, wallpaper, terminal colors all go wrong).
 
 **ONLY use:** `omarchy theme set Vantablack` (or whatever theme name).
 
-### 2. Never edit `~/.local/share/omarchy/`
+### 2. Never edit `/usr/share/omarchy/`
 
-This is Omarchy's source tree, managed by git. Edits here:
-- Are lost on the next `omarchy update`
-- Cause git conflicts with upstream
-- Break Omarchy's migration system
+This is Omarchy's package-owned tree (quattro's replacement for the old
+`~/.local/share/omarchy` git checkout). Edits here are lost on the next package update and can
+break Omarchy's own plugin/shell resolution in ways that are hard to diagnose.
 
-**Reading** `~/.local/share/omarchy/` is safe and encouraged (to understand commands).
+**Reading** `/usr/share/omarchy/` is safe and encouraged (to understand commands, plugin
+source, default configs). If you need to customize a built-in `omarchy-shell` plugin, clone it
+first: `omarchy plugin clone <plugin-id>` — this copies it to
+`~/.config/omarchy/plugins/<yourname>.<name>/`, which is yours to edit. Note that plugins of
+kind `menu` (the root/apps/settings menu system) only pick up a clone swap on a **full
+`omarchy-shell` restart**, not the usual hot-reload — bar-widget-only plugins hot-reload fine.
 
 ### 3. Always restart services after config changes
 
 | Component | Reload command |
 |---|---|
 | Hyprland | auto-reloads on save; then validate with `hyprctl reload && hyprctl configerrors` |
-| Waybar | `omarchy restart waybar` — does NOT auto-reload |
-| Hypridle | `pkill -x hypridle; setsid uwsm-app -- hypridle &>/dev/null &` |
-| Walker | `omarchy restart walker` |
+| Waybar | manual restart — `pkill -x waybar; setsid uwsm-app -- waybar &` (no `omarchy restart waybar` under quattro; that command no longer exists) |
+| omarchy-shell | `omarchy-launch-shell` for a full restart (needed for `menu`-kind plugin changes); `omarchy-shell shell rescanPlugins` hot-reloads bar-widget plugins |
 
-### 4. The elephant menus must exist
-
-`~/.config/elephant/menus/` must contain 3 symlinks for the Styles > Background / Theme /
-Unlock menus in the omarchy launcher to work. `omarchy reinstall configs` does NOT recreate
-these. Script `03-elephant-menus.sh` handles this. If those menus are broken, run it.
-
-### 5. After any waybar config change — restart waybar
+### 4. After any waybar config change — restart waybar
 
 Waybar reads config only on startup. Editing `config.jsonc` or `style.css` has no effect
-until `omarchy restart waybar` is run.
+until waybar is restarted (see above — `omarchy restart waybar` doesn't exist under quattro).
 
 ---
 
@@ -76,31 +120,34 @@ until `omarchy restart waybar` is run.
 ```
 omarchy-dotfiles-repo/
 ├── install.sh              — entry point; runs all scripts in order
-├── CLAUDE.md               — this file
-├── README.md               — user-facing quick reference
+├── CLAUDE.md                — this file
+├── README.md                — user-facing quick reference
 ├── docs/
-│   └── packages.md         — personal package list with sources
+│   └── packages.md          — personal package list with sources
 ├── scripts/
-│   ├── 01-prerequisites.sh — validates Omarchy + Hyprland are present
-│   ├── 02-theme.sh         — copies custom backgrounds, sets Vantablack theme
-│   ├── 03-elephant-menus.sh— creates ~/.config/elephant/menus/ symlinks
-│   ├── 04-hyprland.sh      — copies hypr/ configs, restarts hypridle
-│   ├── 05-waybar.sh        — copies waybar/ configs + cpu_temp_avg.sh
-│   ├── 06-nvim.sh          — copies nvim/ config (not lazy-lock.json)
-│   ├── 07-git.sh           — copies git identity (idempotent)
-│   ├── 08-misc.sh          — copies starship, tmux, walker configs
-│   ├── 09-verify.sh        — post-install health checks
-│   └── 10-packages.sh      — installs personal apps (pacman + AUR)
-└── .config/                — curated personal config files (mirrors ~/.config/)
+│   ├── 01-prerequisites.sh  — validates Omarchy quattro is present
+│   ├── 02-theme.sh          — copies custom backgrounds, sets Vantablack theme
+│   ├── 04-hyprland.sh       — copies hypr/*.lua configs, installs SUPER+Q helper, sets font/idle/screensaver
+│   ├── 05-waybar.sh         — installs waybar package, copies configs, hides Omarchy's own bar
+│   ├── 06-nvim.sh           — copies nvim/ config (not lazy-lock.json)
+│   ├── 07-git.sh            — copies git identity (idempotent)
+│   ├── 08-misc.sh           — starship, tmux, terminal fonts, GTK/Nautilus settings
+│   ├── 09-verify.sh         — post-install health checks
+│   └── 10-packages.sh       — installs personal apps (pacman + AUR)
+└── .config/                 — curated personal config files (mirrors ~/.config/)
+    ├── alacritty/, kitty/, ghostty/, foot/ — terminal configs (Adwaita Mono, size 15)
     ├── git/config
-    ├── hypr/               — autostart, input, looknfeel, hyprlock, hypridle
-    ├── nvim/               — LazyVim base + custom plugins/snippets
-    ├── omarchy/backgrounds/vantablack/  — 6 custom wallpapers
+    ├── gtk-4.0/gtk.css       — Nautilus sidebar spacing + icon-grid top margin
+    ├── hypr/                 — *.lua overrides (monitors, input, bindings, looknfeel, autostart)
+    ├── nvim/                 — LazyVim base + custom plugins/snippets
+    ├── omarchy/backgrounds/vantablack/ — 6 custom wallpapers
     ├── starship.toml
     ├── tmux/tmux.conf
-    ├── walker/config.toml
-    └── waybar/             — config.jsonc, style.css, scripts/cpu_temp_avg.sh
+    └── waybar/               — config.jsonc, style.css, scripts/cpu_temp_avg.sh
 ```
+
+`.local/bin/omarchy-hide-all-panels` (repo root) mirrors `~/.local/bin/` — installed by
+`04-hyprland.sh`.
 
 ---
 
@@ -109,47 +156,65 @@ omarchy-dotfiles-repo/
 ### `01-prerequisites.sh`
 Validates:
 - Omarchy is installed (`omarchy` command exists)
-- Hyprland is running (`hyprctl monitors`)
-- Elephant modules exist in `~/.local/share/omarchy/default/elephant/`
-- Warns (non-fatal) if `udiskie` is missing
+- `/usr/share/omarchy` exists (package-backed quattro layout, not legacy git-checkout)
+- Theme state file exists at the new quattro path
+- Hyprland is running (`hyprctl version`)
+- Warns (non-fatal) if `omarchy-shell` isn't running, or if `udiskie` is missing
 
 ### `02-theme.sh`
 1. Copies `backgrounds/vantablack/` images → `~/.config/omarchy/backgrounds/vantablack/`
-2. Runs `omarchy theme set Vantablack` (NEVER manually copies `omarchy/current/`)
-
-### `03-elephant-menus.sh`
-Creates `~/.config/elephant/menus/` and symlinks all 3 Omarchy lua modules:
-- `omarchy_background_selector.lua`
-- `omarchy_themes.lua`
-- `omarchy_unlocks.lua`
-
-These are symlinks INTO `~/.local/share/omarchy/default/elephant/` (read-only Omarchy files).
-This is correct — we're pointing at the official modules, not copying them.
+2. Runs `omarchy theme set Vantablack` (NEVER manually copies theme state)
 
 ### `04-hyprland.sh`
-Copies these files from repo `.config/hypr/` to `~/.config/hypr/`:
-- `autostart.conf` — adds `udiskie` disk automount
-- `input.conf` — sensitivity=0.35, natural scroll, 3-finger swipe gestures
-- `looknfeel.conf` — window opacity 0.80/0.70, blur enabled (passes=9)
-- `hyprlock.conf` — lock screen font: Adwaita Mono
-- `hypridle.conf` — screensaver + auto-lock timers DISABLED
+Copies these files from repo `.config/hypr/` to `~/.config/hypr/` (all `.lua`, quattro's
+config format — same override locations as the old `.conf` files, new syntax):
+- `hyprland.lua` — entrypoint; loads the personal overrides below plus 9 persistent-workspace rules
+- `monitors.lua` — scale=1, GDK_SCALE=1 (correct for this 1080p 14" panel — not fractional)
+- `input.lua` — sensitivity=0.35, natural scroll, 3-finger workspace swipe gesture
+- `looknfeel.lua` — window opacity 0.80/0.70, blur enabled (passes=9)
+- `bindings.lua` — all custom keybinds, Space-menu swap (see below), SUPER+Q
+- `autostart.lua` — left at stock template (udiskie autostart is now an Omarchy default)
 
-Then restarts hypridle.
+Then:
+- Installs `~/.local/bin/omarchy-hide-all-panels` (SUPER+Q handler, see Quattro section above)
+- `omarchy font set "Adwaita Mono"` — global font (bar, lock screen, menus, everything)
+- `omarchy toggle screensaver-off on` — screensaver disabled
+- `omarchy toggle idle stay-awake` — auto-lock/logout disabled
+- `hyprctl reload`
 
-Files NOT touched (leave Omarchy defaults): `hyprland.conf`, `monitors.conf`,
-`bindings.conf`, `hyprsunset.conf`, `xdph.conf`, `envs.conf`.
+**Files NOT touched** (Omarchy quattro defaults, left alone): the package-provided
+`default.hypr.omarchy` chain, `hyprsunset.conf`, `xdph.conf`, `envs.conf`.
+
+**Keybinding notes:**
+- `SUPER+SPACE` and `SUPER+ALT+SPACE` are swapped from quattro's stock default (`hl.unbind` +
+  re-bind in `bindings.lua`): plain Space now opens the **Apps menu**, Alt+Space opens the
+  **Omarchy menu** (stock ships the other way around).
+- `SUPER+RETURN`/`SUPER+SHIFT+RETURN`/`SUPER+ALT+RETURN` (Terminal/Browser/Tmux) are **not**
+  rebound here — they're already covered by Omarchy's own defaults
+  (`default/hypr/bindings/applications.lua`). Rebinding them causes the key to fire *both*
+  binds (two windows open).
 
 ### `05-waybar.sh`
-Copies `config.jsonc`, `style.css`, `scripts/cpu_temp_avg.sh`. Makes script executable.
-Runs `omarchy restart waybar`.
+1. Installs the `waybar` package if missing (quattro doesn't ship it by default)
+2. Copies `config.jsonc`, `style.css`, `scripts/cpu_temp_avg.sh`
+3. `omarchy toggle bar-off on` — hides Omarchy's own bar (its process/panels stay alive)
+4. Restarts waybar
 
 **Key waybar personalizations:**
-- `modules-right` order: `… pulseaudio | cpu | cpu_temp_avg | battery`
+- `modules-left`: `custom/omarchy | hyprland/workspaces` (all 9 always visible, via the
+  `hyprland.lua` persistent-workspace rules — waybar reads these automatically)
+- `modules-right` order: `… voz.agents-icon | bluetooth | network | pulseaudio | cpu | cpu_temp_avg | battery`
+- `custom/agents` — robot glyph (`󱚣`); click calls `omarchy-shell shell toggle omarchy.agents`
+  to open Omarchy's native Claude Code / Codex usage panel
+- `bluetooth`/`network`/`pulseaudio` on-click call each panel's **own dedicated IPC target**
+  directly (`omarchy-shell omarchy.bluetooth toggle`, etc.) — not the generic
+  `omarchy-shell shell toggle <id>` form, which hits the upstream toggle bug (see Quattro
+  section above)
 - `custom/cpu_temp_avg` — reads coretemp hwmon, shows average of cores 2-5
-- `battery.format-plugged` — `" {capacity}%"` (shows % when plugged in)
+- `battery.format-full` — `"󰂅 {capacity}%"` (shows % even at 100%, not just while charging)
 - `clock.format` — 12-hour (`{:%A %I:%M %p}`)
-- `hyprland/workspaces.persistent-workspaces` — workspaces 1–9 always visible
-- Font in `style.css` — Adwaita Mono
+- Font — 20px Adwaita Mono in `style.css`, all module margins scaled to match (see the file's
+  own comments if adjusting further — everything is proportional to the 20px base)
 
 ### `06-nvim.sh`
 Copies nvim config: `lua/config/`, `lua/custom/`, `lua/plugins/`, `after/plugin/`,
@@ -169,7 +234,22 @@ overwriting. Otherwise copies full `~/.config/git/config` with:
 Copies:
 - `starship.toml` — shell prompt config
 - `tmux/tmux.conf` — terminal multiplexer config
-- `walker/config.toml` — app launcher config
+- Terminal fonts (`alacritty.toml`, `kitty.conf`, `ghostty/config`, `foot/foot.ini`) — Adwaita
+  Mono, size 15 (tuned for this panel's actual pixel density at Hyprland scale=1, not a naive
+  guess — see the "why 15" history if this ever needs revisiting)
+- `gtk-4.0/gtk.css` — Nautilus sidebar row spacing + icon-grid top margin (no gsettings key
+  exists for either; this is a targeted CSS override on stable widget names)
+
+Then sets, via `gsettings`:
+- `text-scaling-factor = 1.5` — global GTK text scale (this panel's DPI needs more than 1x)
+- `font-name`, `document-font-name`, `monospace-font-name` — bumped a couple points on top of
+  the scaling factor
+- `org.gnome.nautilus.icon-view default-zoom-level = large`
+
+Then restarts the three `xdg-desktop-portal*` user services so GTK apps opened afterward
+reflect the new settings immediately, rather than running on whatever was cached from before
+the script ran (these are long-lived session daemons — they don't pick up new gsettings/theme
+state on their own).
 
 ### `09-verify.sh`
 Post-install health checks (all must pass):
@@ -177,16 +257,20 @@ Post-install health checks (all must pass):
 2. `omarchy theme list` — must have >10 themes
 3. `omarchy theme current` — must be `Vantablack`
 4. Background symlink must exist and resolve
-5. `waybar` process must be running
-6. Elephant menus symlinks must exist
+5. `waybar` package installed and process running
+6. Omarchy's own bar must be hidden (`omarchy toggle enabled bar-off`)
 7. `cpu_temp_avg.sh` must be executable
-8. 6+ custom Vantablack backgrounds must be present
-9. `git user.name` must be set
+8. `omarchy-hide-all-panels` (SUPER+Q helper) must be in place and executable
+9. 6+ custom Vantablack backgrounds must be present
+10. `omarchy font current` must be `Adwaita Mono`
+11. Screensaver and idle stay-awake must both be enabled
+12. `git user.name` must be set (+ gitignore/hooks/git-purge-ai checks)
 
 ### `10-packages.sh`
 Installs personal apps with `pacman -S --needed --noconfirm` (skips already-installed).
 AUR packages (`google-chrome`, `sioyek-git`) use `yay`. See `docs/packages.md` for the full
-categorized list.
+categorized list. (`waybar` itself is installed by `05-waybar.sh`, not here, since that step
+already owns "make sure waybar exists and is configured.")
 
 ---
 
@@ -195,21 +279,26 @@ categorized list.
 | Setting | Value | File |
 |---|---|---|
 | Theme | Vantablack | via `omarchy theme set Vantablack` |
-| Active window opacity | 0.80 | `hypr/looknfeel.conf` |
-| Inactive window opacity | 0.70 | `hypr/looknfeel.conf` |
-| Blur | enabled, passes=9 | `hypr/looknfeel.conf` |
-| Mouse sensitivity | 0.35 | `hypr/input.conf` |
-| Natural scroll | enabled | `hypr/input.conf` |
-| 3-finger swipe workspace | enabled | `hypr/input.conf` |
-| Disk automount | udiskie | `hypr/autostart.conf` |
-| Screensaver | DISABLED | `hypr/hypridle.conf` |
-| Auto-lock/logout | DISABLED | `hypr/hypridle.conf` |
-| Lock screen font | Adwaita Mono | `hypr/hyprlock.conf` |
-| Waybar font | Adwaita Mono | `waybar/style.css` |
+| Active window opacity | 0.80 | `hypr/looknfeel.lua` |
+| Inactive window opacity | 0.70 | `hypr/looknfeel.lua` |
+| Blur | enabled, passes=9 | `hypr/looknfeel.lua` |
+| Mouse sensitivity | 0.35 | `hypr/input.lua` |
+| Natural scroll | enabled | `hypr/input.lua` |
+| 3-finger swipe workspace | enabled | `hypr/input.lua` |
+| Monitor scale | 1 (not fractional) | `hypr/monitors.lua` |
+| Screensaver | DISABLED | `omarchy toggle screensaver-off on` |
+| Auto-lock/logout | DISABLED | `omarchy toggle idle stay-awake` |
+| Global font | Adwaita Mono | `omarchy font set "Adwaita Mono"` |
+| Terminal font size | 15 (all 4 terminals) | `alacritty.toml`/`kitty.conf`/`ghostty/config`/`foot.ini` |
+| GTK text scaling | 1.5x | gsettings `text-scaling-factor` |
+| Nautilus icon zoom | large | gsettings `org.gnome.nautilus.icon-view` |
+| Waybar font | 20px Adwaita Mono | `waybar/style.css` |
 | Clock format | 12-hour | `waybar/config.jsonc` |
-| Battery display | icon + % always | `waybar/config.jsonc` |
+| Battery display | icon + % always, even at 100% | `waybar/config.jsonc` |
 | CPU temp widget | after cpu icon | `waybar/config.jsonc` |
-| Workspaces | 1–9 persistent | `waybar/config.jsonc` |
+| Workspaces | 1–9 persistent | `hypr/hyprland.lua` (`hl.workspace_rule`) |
+| Space-menu swap | Space=apps, Alt+Space=menu | `hypr/bindings.lua` |
+| SUPER+Q | close any open bar panel | `~/.local/bin/omarchy-hide-all-panels` |
 | Custom wallpapers | 6 images | `omarchy/backgrounds/vantablack/` |
 
 ---
@@ -237,18 +326,22 @@ categorized list.
 # Hyprland errors (must be empty after any hypr/ change)
 hyprctl configerrors
 
-# Waybar isn't showing changes
-omarchy restart waybar
+# Waybar isn't showing changes (no `omarchy restart waybar` under quattro)
+pkill -x waybar; setsid uwsm-app -- waybar &>/dev/null &
 
-# Background picker broken in launcher
-ls -la ~/.config/elephant/menus/   # should show 3 symlinks
+# omarchy-shell menu-kind plugin change not applying (bar-widget hot-reloads, menu-kind doesn't)
+pkill -9 -f "quickshell -n -p"; omarchy-launch-shell &
+
+# A bar panel is stuck open / wrong panel popped on second click
+omarchy-hide-all-panels    # or press SUPER+Q
+
+# Background picker
+omarchy theme bg next
+omarchy theme bg-switcher
 
 # Theme is broken / wrong colors
 omarchy theme current               # check active theme
 omarchy theme set Vantablack        # re-apply
-
-# Hypridle not picking up changes
-pkill -x hypridle 2>/dev/null; setsid uwsm-app -- hypridle &>/dev/null &
 
 # Full omarchy debug
 omarchy debug --no-sudo --print     # ALWAYS use these flags
@@ -266,12 +359,13 @@ bash scripts/09-verify.sh ~/omarchy-dotfiles-repo
 
 | Path | Reason |
 |---|---|
-| `~/.config/omarchy/current/` | Omarchy theme state — managed by symlinks |
+| `~/.local/state/omarchy/current/` | Omarchy theme state — managed by symlinks |
 | `~/.config/omarchy/themes/` | Theme files — install via `omarchy theme install <url>` |
 | `~/.config/nvim/lazy-lock.json` | Plugin lockfile — regenerated by nvim |
 | Any browser profile directories | Personal data, large, volatile |
-| Any `.bak.*` files | Backup files from `omarchy refresh` |
-| `~/.local/share/omarchy/` | Omarchy source — never edit, never track |
+| Any `.bak.*` files | Backup files from `omarchy refresh`/`omarchy-upgrade-to-quattro` |
+| `/usr/share/omarchy/` | Omarchy package tree — never edit, never track |
+| `~/.config/omarchy/plugins/*.bak.*` | Backups left by `omarchy plugin remove` |
 
 ---
 
@@ -279,21 +373,24 @@ bash scripts/09-verify.sh ~/omarchy-dotfiles-repo
 
 ```bash
 # 1. Fresh Omarchy install (follow omarchy.org instructions)
-# 2. Verify Omarchy is healthy
+# 2. If it's not already quattro, upgrade first:
+omarchy-upgrade-to-quattro
+
+# 3. Verify Omarchy is healthy
 omarchy debug --no-sudo --print
 
-# 3. Clone this repo
+# 4. Clone this repo
 git clone git@github.com:shubhambasak/omarchy-dotfiles.git ~/omarchy-dotfiles-repo
 
-# 4. Install personal apps first (optional but useful for full setup)
+# 5. Install personal apps first (optional but useful for full setup)
 bash ~/omarchy-dotfiles-repo/scripts/10-packages.sh
 
-# 5. Apply all personalizations
+# 6. Apply all personalizations
 bash ~/omarchy-dotfiles-repo/install.sh
 
-# 6. Manual steps (cannot be automated)
+# 7. Manual steps (cannot be automated)
 #    - rustup default stable
 #    - sudo systemctl enable --now docker && sudo usermod -aG docker $USER
 #    - Sign in to 1Password, Vivaldi, Spotify
-#    - Set background via: Omarchy Menu > Styles > Backgrounds
+#    - Set background via: Omarchy Menu > Styles > Backgrounds, or `omarchy theme bg-switcher`
 ```

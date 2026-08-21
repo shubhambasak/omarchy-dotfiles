@@ -1,10 +1,10 @@
 # Dynamic theme colors
-config-file = ?"~/.config/omarchy/current/theme/ghostty.conf"
+config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
 
 # Font
 font-family = "Adwaita Mono"
 font-style = Regular
-font-size = 9
+font-size = 15
 
 # Window
 window-theme = ghostty

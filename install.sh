@@ -20,7 +20,6 @@ fail()   { echo -e "  ${RED}✗ FAILED:${NC} $1"; }
 STEPS=(
   "01-prerequisites.sh"
   "02-theme.sh"
-  "03-elephant-menus.sh"
   "04-hyprland.sh"
   "05-waybar.sh"
   "06-nvim.sh"

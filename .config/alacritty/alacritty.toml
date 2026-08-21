@@ -1,4 +1,4 @@
-general.import = [ "~/.config/omarchy/current/theme/alacritty.toml" ]
+general.import = [ "~/.local/state/omarchy/current/theme/alacritty.toml" ]
 
 [env]
 TERM = "xterm-256color"
@@ -6,20 +6,13 @@ TERM = "xterm-256color"
 [terminal]
 osc52 = "CopyPaste"
 
-# [font]
-# normal = { family = "Adwaita Mono" }
-# bold = { family = "Adwaita Mono" }
-# italic = { family = "Adwaita Mono" }
-# size = 10
-
 [font]
-normal = { family = "JetBrainsMono Nerd Font" }
-bold = { family = "JetBrainsMono Nerd Font" }
-italic = { family = "JetBrainsMono Nerd Font" }
-size = 10
+normal = { family = "Adwaita Mono" }
+bold = { family = "Adwaita Mono" }
+italic = { family = "Adwaita Mono" }
+size = 15
 
 [window]
-opacity = 0.20
 padding.x = 14
 padding.y = 14
 decorations = "None"

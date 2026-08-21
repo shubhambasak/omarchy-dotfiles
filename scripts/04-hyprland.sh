@@ -1,7 +1,9 @@
 #!/bin/bash
-# Apply Hyprland personalisation — only the files that differ from stock Omarchy.
-# Stock files (hyprland.conf, monitors.conf, bindings.conf, hyprsunset.conf,
-# xdph.conf) are left untouched so Omarchy's defaults and future updates apply.
+# Apply Hyprland personalisation for Omarchy quattro (Lua config).
+# Stock files (hyprland.conf-equivalent defaults, monitors.conf, etc. under
+# /usr/share/omarchy) are left untouched — only our override files under
+# ~/.config/hypr are copied, matching Omarchy's own "personal overrides"
+# convention documented in a fresh hyprland.lua.
 set -euo pipefail
 REPO_DIR="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 
@@ -10,25 +12,50 @@ ok() { echo -e "  ${GREEN}✓${NC} $1"; }
 
 SRC="$REPO_DIR/.config/hypr"
 DEST="$HOME/.config/hypr"
+mkdir -p "$DEST"
 
-# autostart.conf — adds exec-once = udiskie (disk automount)
-cp "$SRC/autostart.conf" "$DEST/autostart.conf"
-ok "autostart.conf (udiskie autostart)"
+# hyprland.lua — entrypoint: loads personal overrides + 9 persistent workspaces
+cp "$SRC/hyprland.lua" "$DEST/hyprland.lua"
+ok "hyprland.lua (entrypoint + 9 persistent workspaces)"
 
-# input.conf — kb_layout=us, sensitivity=0.35, natural scroll, 3-finger swipe
-cp "$SRC/input.conf" "$DEST/input.conf"
-ok "input.conf (touchpad: sensitivity, natural scroll, gesture)"
+# monitors.lua — scale=1 (correct for this 1080p 14" panel, not fractional/2x)
+cp "$SRC/monitors.lua" "$DEST/monitors.lua"
+ok "monitors.lua (scale 1, GDK_SCALE 1)"
 
-# looknfeel.conf — window opacity 0.80/0.70 + blur (passes=9)
-cp "$SRC/looknfeel.conf" "$DEST/looknfeel.conf"
-ok "looknfeel.conf (opacity 0.80/0.70 + blur)"
+# input.lua — sensitivity=0.35, natural scroll, 3-finger workspace swipe
+cp "$SRC/input.lua" "$DEST/input.lua"
+ok "input.lua (touchpad: sensitivity, natural scroll, gesture)"
 
-# hyprlock.conf — Adwaita Mono font for lock screen input field
-cp "$SRC/hyprlock.conf" "$DEST/hyprlock.conf"
-ok "hyprlock.conf (Adwaita Mono font)"
+# looknfeel.lua — window opacity 0.80/0.70 + blur (passes=9)
+cp "$SRC/looknfeel.lua" "$DEST/looknfeel.lua"
+ok "looknfeel.lua (opacity 0.80/0.70 + blur)"
 
-# hypridle.conf — screensaver and auto-lock timers disabled
-cp "$SRC/hypridle.conf" "$DEST/hypridle.conf"
-pkill -x hypridle 2>/dev/null || true
-setsid uwsm-app -- hypridle &>/dev/null &
-ok "hypridle.conf (screensaver + auto-lock disabled, daemon restarted)"
+# bindings.lua — all custom keybinds, Space-menu swap, SUPER+Q panel-close
+cp "$SRC/bindings.lua" "$DEST/bindings.lua"
+ok "bindings.lua (keybinds, Space swap, SUPER+Q)"
+
+# autostart.lua — left at stock template; udiskie is now an Omarchy default
+cp "$SRC/autostart.lua" "$DEST/autostart.lua"
+ok "autostart.lua"
+
+# Helper script bound to SUPER+Q: force-closes any open bar panel.
+# Workaround for an Omarchy quattro bug where a second click on the same bar
+# icon sometimes opens a different panel instead of closing the current one.
+mkdir -p "$HOME/.local/bin"
+cp "$REPO_DIR/.local/bin/omarchy-hide-all-panels" "$HOME/.local/bin/omarchy-hide-all-panels"
+chmod +x "$HOME/.local/bin/omarchy-hide-all-panels"
+ok "omarchy-hide-all-panels (SUPER+Q bar-panel-close helper)"
+
+# Global font, screensaver, and idle behavior — set via omarchy commands so
+# the shell.json / fontconfig alias plumbing stays correct.
+omarchy font set "Adwaita Mono" >/dev/null
+ok "font set to Adwaita Mono (bar, lock screen, menus)"
+
+omarchy toggle screensaver-off on >/dev/null
+ok "screensaver disabled"
+
+omarchy toggle idle stay-awake >/dev/null
+ok "idle auto-lock disabled (stay-awake)"
+
+hyprctl reload >/dev/null 2>&1 || true
+ok "Hyprland config reloaded"
