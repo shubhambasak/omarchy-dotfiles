@@ -14,6 +14,11 @@ confirm-close-surface=false
 resize-overlay = never
 gtk-toolbar-style = flat
 
+# Theme's own selection color (#1a1a1a on a pure #000000 background) is nearly
+# invisible - override with the theme's accent gray so selected text actually shows.
+selection-foreground = #000000
+selection-background = #8d8d8d
+
 # Cursor styling
 cursor-style = "block"
 cursor-style-blink = false
@@ -25,6 +30,8 @@ shell-integration-features = no-cursor,ssh-env
 # Keyboard bindings
 keybind = shift+insert=paste_from_clipboard
 keybind = control+insert=copy_to_clipboard
+keybind = ctrl+shift+c=copy_to_clipboard
+keybind = ctrl+shift+v=paste_from_clipboard
 # Send Shift+Enter as CSI-u so TUIs can distinguish it from Enter.
 keybind = shift+enter=csi:13;2u
 # Legacy encoding sends Alt+Shift+Enter the same as Alt+Enter; send CSI-u so tmux can match M-S-Enter.

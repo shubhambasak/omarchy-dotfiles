@@ -17,6 +17,12 @@ padding.x = 14
 padding.y = 14
 decorations = "None"
 
+# Theme's own selection color (#1a1a1a on a pure #000000 background) is nearly
+# invisible - override with the theme's accent gray so selected text actually shows.
+[colors.selection]
+text = "#000000"
+background = "#8d8d8d"
+
 [keyboard]
 bindings = [
 { key = "Insert", mods = "Shift", action = "Paste" },
