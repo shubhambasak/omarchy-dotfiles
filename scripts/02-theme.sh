@@ -20,3 +20,11 @@ ok "Custom Vantablack backgrounds installed ($(ls "$DEST" | wc -l) images)"
 #    This wires up all symlinks in ~/.config/omarchy/current/ correctly.
 omarchy theme set Vantablack
 ok "Theme set to Vantablack via omarchy"
+
+# 3. Install the Limine boot-menu theme-sync hook (recolors /boot/limine.conf
+#    to match the active Omarchy theme on every `omarchy theme set`).
+mkdir -p "$HOME/.config/omarchy/hooks/theme-set.d"
+cp "$REPO_DIR/.config/omarchy/hooks/theme-set.d/limine-theme-sync.sh" \
+  "$HOME/.config/omarchy/hooks/theme-set.d/limine-theme-sync.sh"
+chmod 755 "$HOME/.config/omarchy/hooks/theme-set.d/limine-theme-sync.sh"
+ok "Limine theme-sync hook installed"

@@ -39,6 +39,12 @@ gsettings set org.gnome.desktop.interface monospace-font-name "Adwaita Mono 13"
 gsettings set org.gnome.nautilus.icon-view default-zoom-level "large"
 ok "GTK text scaling (1.5x) + Nautilus icon zoom (large)"
 
+# Cursor theme — Bibata Modern Ice, bumped up from the default 24px (GTK side;
+# the Hyprland/Wayland side is set via XCURSOR_THEME/SIZE in hypr/looknfeel.lua).
+gsettings set org.gnome.desktop.interface cursor-theme "Bibata-Modern-Ice"
+gsettings set org.gnome.desktop.interface cursor-size 32
+ok "Cursor theme (Bibata-Modern-Ice, size 32)"
+
 # Restart the desktop portals so GTK apps opened later in this session pick up
 # the settings above immediately, instead of running on whatever was cached
 # from before this script ran.

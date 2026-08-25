@@ -142,6 +142,7 @@ rustup default stable
 | `gnome-power-manager` | Arch extra | Power statistics |
 | `yaru-icon-theme` | Arch extra | Ubuntu/GNOME icon theme |
 | `kvantum-qt5` | Arch extra | Qt theming engine |
+| `bibata-cursor-theme` | AUR | Cursor theme (set to size 32 via `08-misc.sh` + `hypr/looknfeel.lua`) |
 
 ---
 

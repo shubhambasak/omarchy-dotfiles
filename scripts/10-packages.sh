@@ -105,8 +105,9 @@ fi
 # ---------------------------------------------------------------------------
 
 AUR_PKGS=(
-  google-chrome   # secondary / testing browser
-  sioyek-git      # research-focused PDF reader
+  google-chrome         # secondary / testing browser
+  sioyek-git            # research-focused PDF reader
+  bibata-cursor-theme   # cursor theme (Bibata Modern Ice)
 )
 
 if command -v yay &>/dev/null; then
