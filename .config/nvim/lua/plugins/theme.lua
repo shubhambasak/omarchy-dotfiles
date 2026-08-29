@@ -1,0 +1,52 @@
+return {
+  {
+    "bjarneo/aether.nvim",
+    branch = "v3",
+    name = "aether",
+    priority = 1000,
+    opts = {
+      colors = {
+        bg = "#000000",
+        dark_bg = "#090909",
+        darker_bg = "#070707",
+        lighter_bg = "#1a1a1a",
+
+        fg = "#ffffff",
+        dark_fg = "#505050",
+        light_fg = "#ececec",
+        bright_fg = "#ffffff",
+        muted = "#7a7a7a",
+
+        red = "#a4a4a4",
+        yellow = "#cecece",
+        orange = "#b9b9b9",
+        green = "#b6b6b6",
+        cyan = "#b0b0b0",
+        blue = "#8d8d8d",
+        magenta = "#9b9b9b",
+        brown = "#5c5c5c",
+
+        bright_red = "#a4a4a4",
+        bright_yellow = "#cecece",
+        bright_green = "#b6b6b6",
+        bright_cyan = "#b0b0b0",
+        bright_blue = "#8d8d8d",
+        bright_magenta = "#9b9b9b",
+
+        accent = "#8d8d8d",
+        cursor = "#ffffff",
+        foreground = "#ffffff",
+        background = "#000000",
+        selection = "#1a1a1a",
+        selection_foreground = "#ffffff",
+        selection_background = "#1a1a1a",
+      },
+    },
+  },
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "aether",
+    },
+  },
+}
