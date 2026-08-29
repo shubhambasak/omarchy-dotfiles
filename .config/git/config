@@ -31,5 +31,5 @@
 	email = bloggershubham7011@gmail.com
 [core]
 	autocrlf = false
-	excludesfile = ~/.gitignore_global
-	hooksPath = ~/.git-hooks
+	excludesfile = /home/voz/.gitignore_global
+	hooksPath = /home/voz/.git-hooks
