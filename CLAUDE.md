@@ -271,10 +271,18 @@ Then sets, via `gsettings`:
 - `font-name`, `document-font-name`, `monospace-font-name` — bumped a couple points on top of
   the scaling factor
 - `org.gnome.nautilus.icon-view default-zoom-level = large`
-- `icon-theme = "Yaru-dark"` — **fixes a real bug**: fresh Omarchy installs default to
-  `icon-theme = "Yaru-gray"`, which doesn't exist in the `yaru-icon-theme` package actually
-  shipped (only `Yaru`, `Yaru-dark`, and named color variants) — every icon is broken until
-  this runs.
+- `icon-theme = "Yaru-dark-grey-folders"` — **fixes a real bug and a preference**: fresh
+  Omarchy installs default to `icon-theme = "Yaru-gray"`, which doesn't exist in the
+  `yaru-icon-theme` package actually shipped (only `Yaru`, `Yaru-dark`, and named color
+  variants) — every icon is broken until this runs. On top of that, Yaru-dark's folder icons
+  are orange, which clashes with the monochrome look, so the script builds a local override
+  theme (`~/.local/share/icons/Yaru-dark-grey-folders/`) that inherits everything from
+  Yaru-dark except the folder icons, recolored dark grey (`#1a1a1a`→`#404040`, two distinct
+  tones so the icon's original shading survives — a single flat color loses all depth).
+  Regenerated fresh from the currently-installed Yaru-dark every run via `magick`
+  (grayscale → colorize → restore original alpha mask), not stored as static binaries in this
+  repo. Depends on `magick`, a baseline Omarchy tool (its own plymouth-theming script uses it
+  unconditionally) — not something this repo installs separately.
 
 Then restarts the three `xdg-desktop-portal*` user services so GTK apps opened afterward
 reflect the new settings immediately, rather than running on whatever was cached from before
@@ -329,7 +337,7 @@ manual):
 | Terminal font size | 13 (all 4 terminals) + Nerd Font fallback (foot/kitty/ghostty) | `alacritty.toml`/`kitty.conf`/`ghostty/config`/`foot.ini` |
 | GTK text scaling | 1.25x | gsettings `text-scaling-factor` |
 | Nautilus icon zoom | large | gsettings `org.gnome.nautilus.icon-view` |
-| Icon theme | Yaru-dark (stock `Yaru-gray` doesn't exist) | gsettings `icon-theme` |
+| Icon theme | Yaru-dark-grey-folders (grey folders, regenerated each run) | gsettings `icon-theme` |
 | omarchy-shell popup font | base-size 16 | `omarchy/shell.toml` |
 | Waybar font | 18px Adwaita Mono | `waybar/style.css` |
 | App-drawer second-window fix | Files/Power Stats/Disks | `scripts/03-desktop-overrides.sh` |

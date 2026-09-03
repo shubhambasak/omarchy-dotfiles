@@ -91,7 +91,7 @@ package (quattro doesn't ship it by default), setting the font/screensaver/idle 
 | Global font | Adwaita Mono | `omarchy font set "Adwaita Mono"` |
 | Terminal font size | 13, all 4 terminals + Nerd Font fallback (foot/kitty/ghostty) | `alacritty.toml`/`kitty.conf`/`ghostty/config`/`foot.ini` |
 | GTK scaling / Nautilus zoom | 1.25x / large | gsettings, set in `08-misc.sh` |
-| Icon theme | Yaru-dark (stock default `Yaru-gray` doesn't exist) | gsettings, set in `08-misc.sh` |
+| Icon theme | Yaru-dark-grey-folders (grey folders, not Yaru's orange; regenerated each run) | gsettings, built by `08-misc.sh` |
 | omarchy-shell popup panel font | base-size 16 | `omarchy/shell.toml` |
 | Clock format | 12-hour | `waybar/config.jsonc` |
 | Battery display | icon + %, even at 100% | `waybar/config.jsonc` |
