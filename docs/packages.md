@@ -96,11 +96,9 @@ All packages use `--needed` — already-installed ones are silently skipped.
 | `docker` | Arch extra | Container runtime |
 | `docker-compose` | Arch extra | Multi-container orchestration |
 
-Post-install:
-```bash
-sudo systemctl enable --now docker
-sudo usermod -aG docker $USER   # re-login after this
-```
+`scripts/10-packages.sh` automatically runs `sudo systemctl enable --now docker` and
+`sudo usermod -aG docker $USER` right after these install — only re-logging in for the group
+membership to take effect is left manual.
 
 ---
 
@@ -115,10 +113,8 @@ sudo usermod -aG docker $USER   # re-login after this
 | `luarocks` | Arch extra | Lua package manager |
 | `tree-sitter-cli` | Arch extra | Parser generator |
 
-Post-install:
-```bash
-rustup default stable
-```
+`scripts/10-packages.sh` automatically runs `rustup default stable` right after `rustup`
+installs — nothing manual left here.
 
 ---
 
@@ -140,9 +136,10 @@ rustup default stable
 | `gnome-calculator` | Arch extra | Calculator |
 | `gnome-disk-utility` | Arch extra | Disk partitioning GUI |
 | `gnome-power-manager` | Arch extra | Power statistics |
-| `yaru-icon-theme` | Arch extra | Ubuntu/GNOME icon theme |
+| `yaru-icon-theme` | Arch extra | Ubuntu/GNOME icon theme (pinned to the `Yaru-dark` variant via `08-misc.sh` — the stock default `Yaru-gray` doesn't exist in this package) |
 | `kvantum-qt5` | Arch extra | Qt theming engine |
 | `bibata-cursor-theme` | AUR | Cursor theme (set to size 32 via `08-misc.sh` + `hypr/looknfeel.lua`) |
+| `ttf-jetbrains-mono-nerd-basic` | Arch extra (nerd-fonts) | Nerd Font fallback so LazyVim/waybar icon glyphs render — Adwaita Mono itself has none |
 
 ---
 

@@ -126,8 +126,9 @@ omarchy-dotfiles-repo/
 │   └── packages.md          — personal package list with sources
 ├── scripts/
 │   ├── 01-prerequisites.sh  — validates Omarchy quattro is present
-│   ├── 02-theme.sh          — copies custom backgrounds, sets Vantablack theme
-│   ├── 04-hyprland.sh       — copies hypr/*.lua configs, installs SUPER+Q helper, sets font/idle/screensaver
+│   ├── 02-theme.sh          — installs the Limine theme-sync hook, copies custom backgrounds, sets Vantablack theme
+│   ├── 03-desktop-overrides.sh — fixes the app-drawer second-window bug (Files/Power Stats/Disks)
+│   ├── 04-hyprland.sh       — copies hypr/*.lua configs, installs SUPER+Q helper, sets font/idle/screensaver/shell.toml
 │   ├── 05-waybar.sh         — installs waybar package, copies configs, hides Omarchy's own bar
 │   ├── 06-nvim.sh           — copies nvim/ config (not lazy-lock.json)
 │   ├── 07-git.sh            — copies git identity (idempotent)
@@ -135,12 +136,17 @@ omarchy-dotfiles-repo/
 │   ├── 09-verify.sh         — post-install health checks
 │   └── 10-packages.sh       — installs personal apps (pacman + AUR)
 └── .config/                 — curated personal config files (mirrors ~/.config/)
-    ├── alacritty/, kitty/, ghostty/, foot/ — terminal configs (Adwaita Mono, size 15)
+    ├── alacritty/, kitty/, ghostty/, foot/ — terminal configs (Adwaita Mono, size 13;
+    │                                        foot/kitty/ghostty also fall back to
+    │                                        JetBrainsMono Nerd Font for icon glyphs)
     ├── git/config
     ├── gtk-4.0/gtk.css       — Nautilus sidebar spacing + icon-grid top margin
     ├── hypr/                 — *.lua overrides (monitors, input, bindings, looknfeel, autostart)
     ├── nvim/                 — LazyVim base + custom plugins/snippets
-    ├── omarchy/backgrounds/vantablack/ — 6 custom wallpapers
+    ├── omarchy/
+    │   ├── backgrounds/vantablack/ — 6 custom wallpapers
+    │   ├── hooks/theme-set.d/limine-theme-sync.sh — recolors Limine on every theme change
+    │   └── shell.toml        — omarchy-shell popup panel (bluetooth/network/agents) font size
     ├── starship.toml
     ├── tmux/tmux.conf
     └── waybar/               — config.jsonc, style.css, scripts/cpu_temp_avg.sh
@@ -163,13 +169,28 @@ Validates:
 
 ### `02-theme.sh`
 1. Copies `backgrounds/vantablack/` images → `~/.config/omarchy/backgrounds/vantablack/`
-2. Runs `omarchy theme set Vantablack` (NEVER manually copies theme state)
+2. Installs the Limine theme-sync hook — **before** step 3, not after. Installing it after
+   `omarchy theme set` would mean the very first theme-set never triggers it (the hook wouldn't
+   exist yet at that point) — this bit us once, don't reorder it back.
+3. Runs `omarchy theme set Vantablack` (NEVER manually copies theme state)
+
+### `03-desktop-overrides.sh`
+Fixes a real Omarchy quattro bug: `org.gnome.Nautilus.desktop`, `org.gnome.PowerStats.desktop`,
+and `org.gnome.DiskUtility.desktop` all ship `DBusActivatable=true`. The app-drawer launches
+everything via `gtk-launch <id>.desktop`, which for an already-running D-Bus-activatable app
+sends an `Activate()` call instead of spawning a process — that just re-presents the existing
+window, so opening a second Files/Power-Stats/Disks window from the drawer silently does
+nothing. Generates user-level `.desktop` overrides in `~/.local/share/applications/` from the
+*current* system files (not stored statically in this repo — survives upstream package
+updates) with that one line stripped, then runs `update-desktop-database`.
 
 ### `04-hyprland.sh`
 Copies these files from repo `.config/hypr/` to `~/.config/hypr/` (all `.lua`, quattro's
 config format — same override locations as the old `.conf` files, new syntax):
 - `hyprland.lua` — entrypoint; loads the personal overrides below plus 9 persistent-workspace rules
-- `monitors.lua` — scale=1, GDK_SCALE=1 (correct for this 1080p 14" panel — not fractional)
+- `monitors.lua` — scale=1.1, GDK_SCALE=1. **Not a universal constant** — measured correct on
+  this 1080p 14" panel; a flat scale=1 (96dpi assumption) rendered waybar/terminal text visibly
+  small despite the panel spec suggesting 1x should be fine. Retune per-machine if it looks off.
 - `input.lua` — sensitivity=0.35, natural scroll, 3-finger workspace swipe gesture
 - `looknfeel.lua` — window opacity 0.80/0.70, blur enabled (passes=9)
 - `bindings.lua` — all custom keybinds, Space-menu swap (see below), SUPER+Q
@@ -177,6 +198,9 @@ config format — same override locations as the old `.conf` files, new syntax):
 
 Then:
 - Installs `~/.local/bin/omarchy-hide-all-panels` (SUPER+Q handler, see Quattro section above)
+- Copies `omarchy/shell.toml` (`base-size = 16`) — omarchy-shell's own popup panels
+  (bluetooth/network/agents) read their font size from here; stock default renders them too
+  small on this panel's density, same underlying cause as the monitor scale above.
 - `omarchy font set "Adwaita Mono"` — global font (bar, lock screen, menus, everything)
 - `omarchy toggle screensaver-off on` — screensaver disabled
 - `omarchy toggle idle stay-awake` — auto-lock/logout disabled
@@ -235,16 +259,22 @@ Copies:
 - `starship.toml` — shell prompt config
 - `tmux/tmux.conf` — terminal multiplexer config
 - Terminal fonts (`alacritty.toml`, `kitty.conf`, `ghostty/config`, `foot/foot.ini`) — Adwaita
-  Mono, size 15 (tuned for this panel's actual pixel density at Hyprland scale=1, not a naive
-  guess — see the "why 15" history if this ever needs revisiting)
+  Mono, size 13 (tuned for this panel's actual pixel density combined with Hyprland scale=1.1).
+  foot/kitty/ghostty also carry a `JetBrainsMono Nerd Font` fallback for icon glyphs (Adwaita
+  Mono has none) — Alacritty has no config-level fallback-font mechanism, known gap.
 - `gtk-4.0/gtk.css` — Nautilus sidebar row spacing + icon-grid top margin (no gsettings key
   exists for either; this is a targeted CSS override on stable widget names)
 
 Then sets, via `gsettings`:
-- `text-scaling-factor = 1.5` — global GTK text scale (this panel's DPI needs more than 1x)
+- `text-scaling-factor = 1.25` — global GTK text scale (combines with Hyprland's 1.1 monitor
+  scale for this panel's density)
 - `font-name`, `document-font-name`, `monospace-font-name` — bumped a couple points on top of
   the scaling factor
 - `org.gnome.nautilus.icon-view default-zoom-level = large`
+- `icon-theme = "Yaru-dark"` — **fixes a real bug**: fresh Omarchy installs default to
+  `icon-theme = "Yaru-gray"`, which doesn't exist in the `yaru-icon-theme` package actually
+  shipped (only `Yaru`, `Yaru-dark`, and named color variants) — every icon is broken until
+  this runs.
 
 Then restarts the three `xdg-desktop-portal*` user services so GTK apps opened afterward
 reflect the new settings immediately, rather than running on whatever was cached from before
@@ -268,9 +298,16 @@ Post-install health checks (all must pass):
 
 ### `10-packages.sh`
 Installs personal apps with `pacman -S --needed --noconfirm` (skips already-installed).
-AUR packages (`google-chrome`, `sioyek-git`) use `yay`. See `docs/packages.md` for the full
-categorized list. (`waybar` itself is installed by `05-waybar.sh`, not here, since that step
-already owns "make sure waybar exists and is configured.")
+AUR packages (`google-chrome`, `sioyek-git`, `bibata-cursor-theme`) use `yay`. See
+`docs/packages.md` for the full categorized list. (`waybar` itself is installed by
+`05-waybar.sh`, not here, since that step already owns "make sure waybar exists and is
+configured.")
+
+Then, non-interactively (no credentials/visual input needed, so no reason to leave these
+manual):
+- `sudo systemctl enable --now docker` + `sudo usermod -aG docker "$USER"` (only re-login for
+  the group membership to take effect stays manual)
+- `rustup default stable`
 
 ---
 
@@ -285,14 +322,18 @@ already owns "make sure waybar exists and is configured.")
 | Mouse sensitivity | 0.35 | `hypr/input.lua` |
 | Natural scroll | enabled | `hypr/input.lua` |
 | 3-finger swipe workspace | enabled | `hypr/input.lua` |
-| Monitor scale | 1 (not fractional) | `hypr/monitors.lua` |
+| Monitor scale | 1.1 (retune per-machine) | `hypr/monitors.lua` |
 | Screensaver | DISABLED | `omarchy toggle screensaver-off on` |
 | Auto-lock/logout | DISABLED | `omarchy toggle idle stay-awake` |
 | Global font | Adwaita Mono | `omarchy font set "Adwaita Mono"` |
-| Terminal font size | 15 (all 4 terminals) | `alacritty.toml`/`kitty.conf`/`ghostty/config`/`foot.ini` |
-| GTK text scaling | 1.5x | gsettings `text-scaling-factor` |
+| Terminal font size | 13 (all 4 terminals) + Nerd Font fallback (foot/kitty/ghostty) | `alacritty.toml`/`kitty.conf`/`ghostty/config`/`foot.ini` |
+| GTK text scaling | 1.25x | gsettings `text-scaling-factor` |
 | Nautilus icon zoom | large | gsettings `org.gnome.nautilus.icon-view` |
-| Waybar font | 20px Adwaita Mono | `waybar/style.css` |
+| Icon theme | Yaru-dark (stock `Yaru-gray` doesn't exist) | gsettings `icon-theme` |
+| omarchy-shell popup font | base-size 16 | `omarchy/shell.toml` |
+| Waybar font | 18px Adwaita Mono | `waybar/style.css` |
+| App-drawer second-window fix | Files/Power Stats/Disks | `scripts/03-desktop-overrides.sh` |
+| Limine boot menu | synced to active theme | `omarchy/hooks/theme-set.d/limine-theme-sync.sh` |
 | Clock format | 12-hour | `waybar/config.jsonc` |
 | Battery display | icon + % always, even at 100% | `waybar/config.jsonc` |
 | CPU temp widget | after cpu icon | `waybar/config.jsonc` |
@@ -388,9 +429,9 @@ bash ~/omarchy-dotfiles-repo/scripts/10-packages.sh
 # 6. Apply all personalizations
 bash ~/omarchy-dotfiles-repo/install.sh
 
-# 7. Manual steps (cannot be automated)
-#    - rustup default stable
-#    - sudo systemctl enable --now docker && sudo usermod -aG docker $USER
+# 7. Manual steps (need credentials or visual input — everything else is now
+#    scripted, including docker enable/group and rustup default stable)
 #    - Sign in to 1Password, Vivaldi, Spotify
+#    - Re-login for the docker group membership to take effect
 #    - Set background via: Omarchy Menu > Styles > Backgrounds, or `omarchy theme bg-switcher`
 ```
