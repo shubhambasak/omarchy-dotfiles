@@ -130,14 +130,27 @@ GHOSTTY_SIZE="$(sed -n 's/^font-size = \([0-9]*\).*/\1/p' "$HOME/.config/ghostty
   || err "Terminal font sizes disagree (foot=$FOOT_SIZE kitty=$KITTY_SIZE ghostty=$GHOSTTY_SIZE)"
 ok "Terminal font sizes agree across foot/kitty/ghostty ($FOOT_SIZE)"
 
-# 19. Icon theme must be a variant that actually exists (stock default
-#     "Yaru-gray" doesn't, and renders broken icons everywhere)
+# 19. Icon theme must be the grey-folders override (stock default
+#     "Yaru-gray" doesn't even exist as a package variant)
 ICON_THEME="$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")"
-[[ "$ICON_THEME" == "Yaru-dark" ]] \
-  || err "icon-theme is '$ICON_THEME', expected Yaru-dark"
-ok "Icon theme — Yaru-dark"
+[[ "$ICON_THEME" == "Yaru-dark-grey-folders" ]] \
+  || err "icon-theme is '$ICON_THEME', expected Yaru-dark-grey-folders"
+ICON_THEME_DIR="$HOME/.local/share/icons/Yaru-dark-grey-folders"
+ICON_COUNT="$(find "$ICON_THEME_DIR" -name '*.png' 2>/dev/null | wc -l)"
+[[ "$ICON_COUNT" -ge 100 ]] \
+  || err "$ICON_THEME_DIR has only $ICON_COUNT recolored icons, expected 100+"
+ok "Icon theme — Yaru-dark-grey-folders ($ICON_COUNT recolored icons)"
 
-# 20. Limine theme-sync hook must be installed and executable
+# 20. Bibata-Modern-Ice cursor must actually be installed, not just
+#     configured — the package name changed upstream once already
+[[ -d "/usr/share/icons/Bibata-Modern-Ice" ]] \
+  || err "Bibata-Modern-Ice not installed — run: yay -S --needed bibata-cursor-theme"
+CURSOR_THEME="$(gsettings get org.gnome.desktop.interface cursor-theme | tr -d "'")"
+[[ "$CURSOR_THEME" == "Bibata-Modern-Ice" ]] \
+  || err "cursor-theme is '$CURSOR_THEME', expected Bibata-Modern-Ice"
+ok "Cursor theme — Bibata-Modern-Ice (installed and configured)"
+
+# 21. Limine theme-sync hook must be installed and executable
 LIMINE_HOOK="$HOME/.config/omarchy/hooks/theme-set.d/limine-theme-sync.sh"
 [[ -x "$LIMINE_HOOK" ]] \
   || err "$LIMINE_HOOK missing or not executable — run scripts/02-theme.sh"
