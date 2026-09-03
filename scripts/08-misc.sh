@@ -18,26 +18,37 @@ mkdir -p "$HOME/.config/tmux"
 cp "$REPO_DIR/.config/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf"
 ok "tmux/tmux.conf"
 
-# Terminal fonts — Adwaita Mono at size 15, tuned for this panel's actual
+# Terminal fonts — Adwaita Mono at size 13, tuned for this panel's actual
 # pixel density (not a naive "double everything" from a stock 1x assumption).
+# foot/kitty/ghostty also carry a JetBrainsMono Nerd Font fallback so
+# icon glyphs (nvim-web-devicons, mini.icons, etc.) render instead of showing
+# as blank boxes — Adwaita Mono itself has no icon glyphs. Alacritty has no
+# config-level fallback-font mechanism, so it doesn't get one (known gap).
 mkdir -p "$HOME/.config/alacritty" "$HOME/.config/kitty" "$HOME/.config/ghostty" "$HOME/.config/foot"
 cp "$REPO_DIR/.config/alacritty/alacritty.toml" "$HOME/.config/alacritty/alacritty.toml"
 cp "$REPO_DIR/.config/kitty/kitty.conf" "$HOME/.config/kitty/kitty.conf"
 cp "$REPO_DIR/.config/ghostty/config" "$HOME/.config/ghostty/config"
 cp "$REPO_DIR/.config/foot/foot.ini" "$HOME/.config/foot/foot.ini"
-ok "terminal fonts (alacritty, kitty, ghostty, foot — Adwaita Mono, size 15)"
+ok "terminal fonts (alacritty, kitty, ghostty, foot — Adwaita Mono, size 13)"
 
 # GTK4/Nautilus: bigger icons, bigger fonts, breathing room in sidebar + grid.
 mkdir -p "$HOME/.config/gtk-4.0"
 cp "$REPO_DIR/.config/gtk-4.0/gtk.css" "$HOME/.config/gtk-4.0/gtk.css"
 ok "gtk-4.0/gtk.css (sidebar row spacing, icon-grid top margin)"
 
-gsettings set org.gnome.desktop.interface text-scaling-factor 1.5
+gsettings set org.gnome.desktop.interface text-scaling-factor 1.25
 gsettings set org.gnome.desktop.interface font-name "Adwaita Sans 13"
 gsettings set org.gnome.desktop.interface document-font-name "Adwaita Sans 14"
 gsettings set org.gnome.desktop.interface monospace-font-name "Adwaita Mono 13"
 gsettings set org.gnome.nautilus.icon-view default-zoom-level "large"
-ok "GTK text scaling (1.5x) + Nautilus icon zoom (large)"
+ok "GTK text scaling (1.25x) + Nautilus icon zoom (large)"
+
+# Fresh Omarchy installs default to icon-theme "Yaru-gray", which does not
+# exist in the yaru-icon-theme package actually shipped (only "Yaru",
+# "Yaru-dark", and named color variants) — every icon renders broken until
+# this is pinned to something real.
+gsettings set org.gnome.desktop.interface icon-theme "Yaru-dark"
+ok "Icon theme (Yaru-dark — stock default 'Yaru-gray' doesn't exist)"
 
 # Cursor theme — Bibata Modern Ice, bumped up from the default 24px (GTK side;
 # the Hyprland/Wayland side is set via XCURSOR_THEME/SIZE in hypr/looknfeel.lua).

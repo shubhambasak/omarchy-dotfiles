@@ -10,7 +10,7 @@ osc52 = "CopyPaste"
 normal = { family = "Adwaita Mono" }
 bold = { family = "Adwaita Mono" }
 italic = { family = "Adwaita Mono" }
-size = 15
+size = 13
 
 [window]
 padding.x = 14
