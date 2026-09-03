@@ -73,6 +73,7 @@ PACMAN_PKGS=(
   gnome-power-manager
   yaru-icon-theme               # Ubuntu/GNOME icon theme
   kvantum-qt5                   # Qt theming engine
+  ttf-jetbrains-mono-nerd-basic # Nerd Font fallback for LazyVim/waybar icon glyphs
 
   # --- Printing ---
   cups
@@ -98,6 +99,19 @@ if sudo pacman -S --needed --noconfirm "${PACMAN_PKGS[@]}"; then
   ok "pacman packages installed (skipped already-present ones)"
 else
   echo -e "  ${YELLOW}⚠ Some pacman packages failed — check output above.${NC}"
+fi
+
+# Non-interactive follow-ups for packages just installed above — these need
+# no credentials or visual input, so there's no reason to leave them manual.
+if command -v docker &>/dev/null; then
+  sudo systemctl enable --now docker
+  sudo usermod -aG docker "$USER"
+  ok "docker enabled + $USER added to docker group (re-login to use docker without sudo)"
+fi
+
+if command -v rustup &>/dev/null; then
+  rustup default stable
+  ok "rustup default toolchain set to stable"
 fi
 
 # ---------------------------------------------------------------------------
@@ -128,9 +142,7 @@ fi
 echo ""
 ok "Packages done."
 echo ""
-echo "  Manual follow-ups (cannot be scripted):"
-echo "  • rustup default stable   — set the Rust toolchain"
+echo "  Manual follow-ups (need credentials or visual input, cannot be scripted):"
 echo "  • Sign in to 1Password, Vivaldi, Spotify"
-echo "  • Enable Docker: sudo systemctl enable --now docker"
-echo "  • Add yourself to docker group: sudo usermod -aG docker \$USER (then re-login)"
+echo "  • Re-login for the docker group membership to take effect"
 echo "  • Configure fcitx5 for input method if needed"

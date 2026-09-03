@@ -46,6 +46,13 @@ cp "$REPO_DIR/.local/bin/omarchy-hide-all-panels" "$HOME/.local/bin/omarchy-hide
 chmod +x "$HOME/.local/bin/omarchy-hide-all-panels"
 ok "omarchy-hide-all-panels (SUPER+Q bar-panel-close helper)"
 
+# omarchy-shell's own popup panels (bluetooth/network/agents) read their base
+# text size from shell.toml — stock default renders them too small on this
+# panel's density.
+mkdir -p "$HOME/.config/omarchy"
+cp "$REPO_DIR/.config/omarchy/shell.toml" "$HOME/.config/omarchy/shell.toml"
+ok "omarchy/shell.toml (popup panel base font size)"
+
 # Global font, screensaver, and idle behavior — set via omarchy commands so
 # the shell.json / fontconfig alias plumbing stays correct.
 omarchy font set "Adwaita Mono" >/dev/null
