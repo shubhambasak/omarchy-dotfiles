@@ -31,21 +31,9 @@ return {
     lazy = true,
     priority = 1000,
   },
-  {
-    "catppuccin/nvim",
-    name = "catppuccin",
-    lazy = false, -- CHANGE: Load it immediately
-    priority = 1000,
-    config = function()
-      require("catppuccin").setup({
-        flavour = "mocha", -- or "macchiato", "frappe", "latte"
-        transparent_background = false,
-        term_colors = true,
-      })
-      -- Apply the colorscheme
-      vim.cmd.colorscheme("catppuccin")
-    end,
-  },
+  -- catppuccin/nvim is NOT here: it's the permanent colorscheme, owned
+  -- entirely by catppuccin.lua (which sets it up and applies it directly).
+  -- Listing it again here with lazy=true would just fight that file.
   {
     "sainnhe/everforest",
     lazy = true,
