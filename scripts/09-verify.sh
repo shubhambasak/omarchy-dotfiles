@@ -106,5 +106,42 @@ ok "git-purge-ai available"
   || err "~/.local/bin/git-filter-repo not found — run 07-git.sh"
 ok "git-filter-repo available"
 
+# 16. Desktop-launch overrides for DBusActivatable apps must be in place
+for app in org.gnome.Nautilus org.gnome.PowerStats org.gnome.DiskUtility; do
+  OVERRIDE="$HOME/.local/share/applications/$app.desktop"
+  [[ -f "$OVERRIDE" ]] \
+    || err "$OVERRIDE missing — run scripts/03-desktop-overrides.sh"
+  ! grep -q '^DBusActivatable=true$' "$OVERRIDE" \
+    || err "$OVERRIDE still has DBusActivatable=true — app-drawer second-window bug will recur"
+done
+ok "Desktop-launch overrides in place (Files/Power Stats/Disks second-window fix)"
+
+# 17. omarchy-shell popup panel font size must be set
+SHELL_TOML="$HOME/.config/omarchy/shell.toml"
+grep -q "^base-size" "$SHELL_TOML" 2>/dev/null \
+  || err "$SHELL_TOML missing base-size — popup panels (bluetooth/network/agents) will render too small"
+ok "omarchy-shell popup panel font size set"
+
+# 18. Terminal font sizes must agree with each other (foot as the reference)
+FOOT_SIZE="$(sed -n 's/.*Adwaita Mono:size=\([0-9]*\).*/\1/p' "$HOME/.config/foot/foot.ini" | head -n1)"
+KITTY_SIZE="$(sed -n 's/^font_size \([0-9.]*\).*/\1/p' "$HOME/.config/kitty/kitty.conf" | head -n1)"
+GHOSTTY_SIZE="$(sed -n 's/^font-size = \([0-9]*\).*/\1/p' "$HOME/.config/ghostty/config" | head -n1)"
+[[ -n "$FOOT_SIZE" && "${KITTY_SIZE%.*}" == "$FOOT_SIZE" && "$GHOSTTY_SIZE" == "$FOOT_SIZE" ]] \
+  || err "Terminal font sizes disagree (foot=$FOOT_SIZE kitty=$KITTY_SIZE ghostty=$GHOSTTY_SIZE)"
+ok "Terminal font sizes agree across foot/kitty/ghostty ($FOOT_SIZE)"
+
+# 19. Icon theme must be a variant that actually exists (stock default
+#     "Yaru-gray" doesn't, and renders broken icons everywhere)
+ICON_THEME="$(gsettings get org.gnome.desktop.interface icon-theme | tr -d "'")"
+[[ "$ICON_THEME" == "Yaru-dark" ]] \
+  || err "icon-theme is '$ICON_THEME', expected Yaru-dark"
+ok "Icon theme — Yaru-dark"
+
+# 20. Limine theme-sync hook must be installed and executable
+LIMINE_HOOK="$HOME/.config/omarchy/hooks/theme-set.d/limine-theme-sync.sh"
+[[ -x "$LIMINE_HOOK" ]] \
+  || err "$LIMINE_HOOK missing or not executable — run scripts/02-theme.sh"
+ok "Limine theme-sync hook installed"
+
 echo ""
 ok "All checks passed. System is personalised and fully functional."
